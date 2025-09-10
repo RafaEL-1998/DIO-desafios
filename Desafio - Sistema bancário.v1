@@ -1,0 +1,66 @@
+# Desafio - Sistema bancário.v1 
+
+inicio = "Olá, o que deseja fazer hoje?"
+print(inicio.center(20))
+menu = """
+[d] Depósito
+[s] Saque
+[e] Extrato
+[q] Sair/voltar
+"""
+
+saldo = float(0)
+limite = float(500)
+Valor_maximo_saques = float(1500)
+Limite_saques = 3
+entradas = []
+saidas = []
+
+while True:
+    opcao = input(menu)
+
+    if opcao == "d":
+        print("Qual valor a ser depositado?")
+        deposito = float(input())
+        entradas.append(deposito)
+
+        if deposito <= 0:
+            print("Impossível depositar esse valor, tente outra operação:")
+
+        else:
+            saldo = saldo + deposito
+            print(f"Saldo atual: R$ {saldo}")
+            print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "s":
+        print("Qual valor a ser sacado?")
+        saque = float(input())
+
+        if saque > saldo:
+            saldo = saldo
+            print("Saldo insuficiente, tente outra operação:")
+
+        elif saque <= saldo and saque <= limite and Limite_saques > 0:
+            saldo = saldo - saque
+            Valor_maximo_saques = Valor_maximo_saques - saque
+            Limite_saques = Limite_saques - 1
+            saidas.append(saque)
+            print(f"Saldo atual: R$ {saldo}")
+            print(f"Saque limite: R$ {Valor_maximo_saques}, Número(s) de saque(s) restante(s): {Limite_saques}")
+
+        elif Limite_saques == 0 or saque > limite:
+            saldo = saldo
+            print(f"Limite de saques ou valor limite atingido(s), tente novamente amanhã.")
+
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "e":
+        total_entradas = sum(entradas)
+        total_saidas = sum(saidas)
+        print(f"Valores de entrada: R$ {total_entradas}")
+        print(f"Valores de saída: R$ -{total_saidas}")
+        print(f"O saldo atual é de: R$ {saldo}")
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "q":
+        break
