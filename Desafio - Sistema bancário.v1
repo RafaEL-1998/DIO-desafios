@@ -6,7 +6,7 @@ menu = """
 [d] Depósito
 [s] Saque
 [e] Extrato
-[q] Sair/voltar
+[q] Sair
 """
 
 saldo = float(0)
