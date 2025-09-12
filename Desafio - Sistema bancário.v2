@@ -1,0 +1,134 @@
+# Desafio - Sistema bancário.v2
+
+inicio = "\nOlá, o que deseja fazer hoje?"
+print(inicio.center(20))
+menu = """
+-----MENU-----
+
+[d] Depósito
+[s] Saque
+[e] Extrato
+[q] Sair
+"""
+
+from datetime import datetime
+
+saldo = float(0)
+limite = float(500)
+Valor_maximo_saques = float(1500)
+Limite_saques = 3
+entradas = []
+saidas = []
+data_deposito = []
+data_saque = []
+transacoes_dia = 10
+mascara_ptbr = "%d/%m/%Y %H:%M:%S"
+
+def formata_sem_arredondar(saldo, casas):
+    fator = 10 ** casas
+    truncado = int(saldo * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+
+def formata_sem_arredonda(saque, casas):
+    fator = 10 ** casas
+    truncado = int(saque * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+
+def formata_sem_arredo(total_entradas, casas):
+    fator = 10 ** casas
+    truncado = int(total_entradas * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+
+def formata_sem_arre(total_saidas, casas):
+    fator = 10 ** casas
+    truncado = int(total_saidas * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+
+while True:
+    opcao = input(menu)
+
+    if opcao == "d":
+        print("Qual valor a ser depositado?")
+        deposito = float(input())
+
+        def formata_sem_ar(deposito, casas):
+            fator = 10 ** casas
+            truncado = int(deposito * fator) / fator
+            # força a exibição do número com 'casas' decimais
+            return f"{truncado:.{casas}f}"
+
+        if deposito <= 0:
+            print("Impossível depositar esse valor.\n")
+
+        elif deposito > 0:
+            saldo = saldo + deposito
+            transacoes_dia -= 1
+            entradas.append(deposito)
+            data_deposito.append({"valor": deposito, "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")})
+            print(f"\nSaldo atual: R$ {formata_sem_arredondar(saldo,2)}\n")
+            print(f"Número(s) de transação(ões) restante(s): {transacoes_dia}")
+
+            if transacoes_dia == 0:
+                saldo = saldo
+                print("Número de transações máximo atingido, tente novamente amanhã.\n")
+
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "s":
+        print("Qual valor a ser sacado?")
+        saque = float(input())
+        print("\n")
+
+        def formata_sem_a(saque, casas):
+            fator = 10 ** casas
+            truncado = int(saque * fator) / fator
+            # força a exibição do número com 'casas' decimais
+            return f"{truncado:.{casas}f}"
+
+        if saque > saldo:
+            saldo = saldo
+            print("Saldo insuficiente.\n")
+
+        elif saque <= saldo and saque <= limite and Limite_saques > 0:
+            saldo = saldo - saque
+            Valor_maximo_saques = Valor_maximo_saques - saque
+            Limite_saques = Limite_saques - 1
+            transacoes_dia -= 1
+            saidas.append(saque)
+            data_saque.append({"valor":saque, "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")})
+
+            print(f"Saldo atual: R$ {formata_sem_arredondar(saldo,2)}")
+            print(f"Saque limite: R$ {formata_sem_arredonda(saque,2)}\n")
+            print(f"Número(s) de saque(s) restante(s): {Limite_saques}")
+            print(f"Número(s) de transação(ões) restante(s): {transacoes_dia}\n")
+
+        elif Limite_saques == 0 or saque > limite or transacoes_dia == 0:
+            saldo = saldo
+            print(f"Limite de saques/valor/transação atingido(s), tente novamente amanhã.")
+
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "e":
+        total_entradas = sum(entradas)
+        total_saidas = sum(saidas)
+        e = "EXTRATO"
+        print(e.center(36,"-"))
+
+        print(f"Valores de entrada: R$ {formata_sem_arredo(total_entradas,2)}")
+        for op in data_deposito:
+            print(f"R$ {formata_sem_arredo(op['valor'],2)} -- {op['data']}")
+
+        print(f"\nValores de saída: R$ -{formata_sem_arre(total_saidas,2)}")
+        for op in data_saque:
+            print(f"R$ {formata_sem_a(op['valor'],2)} -- {op['data']}")
+
+        print(f"\nO saldo atual é de: R$ {formata_sem_arredondar(saldo,2)}\n")
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "q":
+        print("Tenha um excelente dia!")
+        break
