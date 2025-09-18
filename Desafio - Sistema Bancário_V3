@@ -1,0 +1,226 @@
+# Desafio - Sistema bancário.v3
+
+class Cliente:
+    def __init__(self, _endereco, _complemento):
+        self._endereco = _endereco
+        self._complemento = _complemento
+
+    def __str__(self):
+        return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
+
+class Pessoa_Fisica(Cliente):
+    def __init__(self, _CPF, _nome, _data_nasc, _endereco, _complemento):
+        self._CPF = _CPF
+        self._nome = _nome
+        self._data_nasc = _data_nasc
+        super().__init__(_endereco, _complemento)
+        self._endereco = _endereco
+        self._complemento = _complemento
+
+class Pessoa_Jur(Cliente):
+    def __init__(self, _CNPJ, _nome, _endereco, _complemento):
+        self._CNPJ = _CNPJ
+        self._nome = _nome
+        super().__init__(_endereco, _complemento)
+        self._endereco = _endereco
+        self._complemento = _complemento
+
+class Conta:
+    def __init__(self, _saldo, _nro_conta, _agencia, _tipo_cliente, _nova_conta_PF, _nova_conta_PJ):
+        self._saldo = _saldo
+        self._nro_conta = _nro_conta
+        self._agencia = _agencia
+        self._tipo_cliente = _tipo_cliente
+        self._nova_conta_PF = _nova_conta_PF
+        self._nova_conta_PJ = _nova_conta_PJ
+
+    def mostrar_saldo(self, _saldo):
+        return self._saldo
+
+    def sacar(self, saque):
+        self._saldo -= saque
+
+    def depositar(self, valor):
+        self._saldo += valor
+
+    def realizar_transacao(self, valor, validacao):
+        self._saldo -= valor
+        self.validacao = validacao
+
+    def cadastro(self):
+        print(f"Cadastro: {self._tipo_cliente} / Agência: {self._agencia} / Número da conta: {self._nro_conta}")
+
+print("\n Bem-vindo!")
+
+while True:
+    tipo_cliente = input(str("Para criar uma conta, escolha uma opção:[PF]/[PJ]"))
+    option = input(tipo_cliente)
+
+    if tipo_cliente == "PF":
+        _CPF = input(str(f"Digite somente os números CPF: "))
+        _nome = input(str(f"Digite o nome: "))
+        _data_nasc = input(str(f"Digite o data de nascimento: "))
+        _endereco = input(str("Digite seu endereço:"))
+        _complemento = input(str("Digite o complemento do seu endereço:"))
+        _nova_conta_PF = Pessoa_Fisica(_CPF, _nome, _data_nasc, _endereco, _complemento)
+        _nro_conta = "1234"
+        _agencia = "0001"
+        _tipo_cliente = "PF"
+        conta = Conta(0, _nro_conta, _agencia, _tipo_cliente, _nova_conta_PF,"")
+        print("\nNova conta PF criada com sucesso!")
+        print(conta.cadastro())
+        break
+
+    elif tipo_cliente == "PJ":
+        _CNPJ = input("Digite somente os números CNPJ: ")
+        _nome = input("Digite o nome: ")
+        _endereco = input(str("Digite seu endereço:"))
+        _complemento = input(str("Digite o complemento do seu endereço:"))
+        _nova_conta_PJ = Pessoa_Jur(_CNPJ, _nome, _endereco, _complemento)
+        _nro_conta = "9999"
+        _agencia = "0001"
+        _tipo_cliente = "PJ"
+        conta = Conta(0, _nro_conta, _agencia, _tipo_cliente, "", _nova_conta_PJ)
+        print("\nNova conta PJ criada com sucesso!")
+        print(conta.cadastro())
+        break
+
+    else:
+        print("Não entendi, tente novamente.")
+
+inicio = "\nO que deseja fazer hoje?"
+print(inicio.center(20))
+menu = """
+-----MENU-----
+
+[d] Depósito
+[s] Saque
+[e] Extrato
+[q] Sair
+"""
+
+from datetime import datetime
+
+saldo = float(0)
+limite = float(500)
+Valor_maximo_saques = float(1500)
+Limite_saques = 3
+entradas = []
+saidas = []
+data_deposito = []
+data_saque = []
+transacoes_dia = 10
+mascara_ptbr = "%d/%m/%Y %H:%M:%S"
+teste_saque = bool()
+teste_dep = bool()
+
+def formata_sem_arredondar(saldo, casas):
+    fator = 10 ** casas
+    truncado = int(saldo * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+def formata_sem_arredonda(saque, casas):
+    fator = 10 ** casas
+    truncado = int(saque * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+def formata_sem_arredo(total_entradas, casas):
+    fator = 10 ** casas
+    truncado = int(total_entradas * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+def formata_sem_arre(total_saidas, casas):
+    fator = 10 ** casas
+    truncado = int(total_saidas * fator) / fator
+    # força a exibição do número com 'casas' decimais
+    return f"{truncado:.{casas}f}"
+
+while True:
+    opcao = input(menu)
+
+    if opcao == "d":
+        print("Qual valor a ser depositado?")
+        deposito = float(input())
+
+        def formata_sem_ar(deposito, casas):
+            fator = 10 ** casas
+            truncado = int(deposito * fator) / fator
+            # força a exibição do número com 'casas' decimais
+            return f"{truncado:.{casas}f}"
+
+        if deposito <= 0:
+            teste_dep = False
+            print("Impossível depositar esse valor.\n")
+
+        elif deposito > 0:
+            saldo = saldo + deposito
+            transacoes_dia -= 1
+            entradas.append(deposito)
+            data_deposito.append({"valor": deposito, "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")})
+            teste_dep = True
+            print("Depósito realizado com sucesso!")
+            print(f"\nSaldo atual: R$ {formata_sem_arredondar(saldo,2)}\n")
+            print(f"Número(s) de transação(ões) restante(s): {transacoes_dia}")
+
+            if transacoes_dia == 0:
+                saldo = saldo
+                print("Número de transações máximo atingido, tente novamente amanhã.\n")
+
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "s":
+        print("Qual valor a ser sacado?")
+        saque = float(input())
+        print("\n")
+
+        def formata_sem_a(saque, casas):
+            fator = 10 ** casas
+            truncado = int(saque * fator) / fator
+            # força a exibição do número com 'casas' decimais
+            return f"{truncado:.{casas}f}"
+
+        if saque > saldo:
+            saldo = saldo
+            teste_saque = False
+            print("Saldo insuficiente.\n")
+
+        elif saque <= saldo and saque <= limite and Limite_saques > 0:
+            saldo = saldo - saque
+            Valor_maximo_saques = Valor_maximo_saques - saque
+            Limite_saques = Limite_saques - 1
+            transacoes_dia -= 1
+            saidas.append(saque)
+            data_saque.append({"valor":saque, "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")})
+            teste_saque = True
+            print("Saldo realizado com sucesso!")
+            print(f"Saldo atual: R$ {formata_sem_arredondar(saldo,2)}")
+            print(f"Saque limite: R$ {formata_sem_arredonda(saque,2)}\n")
+            print(f"Número(s) de saque(s) restante(s): {Limite_saques}")
+            print(f"Número(s) de transação(ões) restante(s): {transacoes_dia}\n")
+
+        elif Limite_saques == 0 or saque > limite or transacoes_dia == 0:
+            saldo = saldo
+            print(f"Limite de saques/valor/transação atingido(s), tente novamente amanhã.")
+
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "e":
+        total_entradas = sum(entradas)
+        total_saidas = sum(saidas)
+        e = "EXTRATO"
+        print(e.center(36,"-"))
+
+        print(f"Valores de entrada: R$ {formata_sem_arredo(total_entradas,2)}")
+        for op in data_deposito:
+            print(f"R$ {formata_sem_arredo(op['valor'],2)} -- {op['data']}")
+
+        print(f"\nValores de saída: R$ -{formata_sem_arre(total_saidas,2)}")
+        for op in data_saque:
+            print(f"R$ {formata_sem_a(op['valor'],2)} -- {op['data']}")
+
+        print(f"\nO saldo atual é de: R$ {formata_sem_arredondar(saldo,2)}\n")
+        print("Deseja realizar mais alguma operação?")
+
+    elif opcao == "q":
+        print("Tenha um excelente dia!")
+        break
