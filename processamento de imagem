@@ -1,0 +1,28 @@
+from PIL import Image, ImageFilter
+
+def open_image(image_path):
+    """Abre uma imagem e retorna o objeto PIL.Image."""
+    return Image.open(image_path)
+
+def save_image(image, path):
+    """Salva o objeto PIL.Image em um arquivo."""
+    image.save(path)
+
+def blur_image(image_path, radius=2):
+    """Aplica um desfoque gaussiano à imagem e retorna o objeto PIL.Image."""
+    img = Image.open(image_path)
+    return img.filter(ImageFilter.GaussianBlur(radius))
+
+def sharpen_image(image_path):
+    """Aumenta a nitidez da imagem e retorna o objeto PIL.Image."""
+    img = Image.open(image_path)
+    return img.filter(ImageFilter.SHARPEN)
+
+# Exemplo de uso:
+if __name__ == "__main__":
+    # Troque 'foto.jpg' pelo caminho de uma imagem de teste
+    img_blur = blur_image("foto.jpg", radius=5)
+    save_image(img_blur, "foto_borrada.jpg")
+
+    img_sharp = sharpen_image("foto.jpg")
+    save_image(img_sharp, "foto_nitida.jpg")
